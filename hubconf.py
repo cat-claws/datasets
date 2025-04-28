@@ -35,7 +35,7 @@ from datasets import load_dataset
 	
 # # 	return TransformTensorDataset(*tensors, transform=transform)
 
-class CIFAR10(Dataset):
+class CIFAR10(torch.utils.data.Dataset):
 	def __init__(self, transform=None, **kwargs):
 		self.hf_dataset = load_dataset(**kwargs)
 		self.transform = transform
