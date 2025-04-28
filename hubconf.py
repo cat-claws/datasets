@@ -26,7 +26,7 @@ def loader(columns, **kwargs):
 # # Apply it
 # dataset = dataset.with_transform(to_tuple)
 
-def cifar10(transform, **kwargs):
+def cifar10(transform=None, **kwargs):
 	def to_tuple(example):
 	        return (transform(example["image"]) if transform else example["image"], example['label'])
 
