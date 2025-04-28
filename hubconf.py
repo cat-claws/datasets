@@ -6,10 +6,10 @@ from datasets import load_dataset
 
 # torch.hub.load('cat-claws/datasets', 'cifar10', name = 'cifar10-8', split='train', transform=transform)
 
-def loader(columns, **kwargs):
-	dataset = load_dataset(**kwargs)
-	dataset.set_format(type="numpy", columns=columns)
-	return dataset
+# def loader(columns, **kwargs):
+# 	dataset = load_dataset(**kwargs)
+# 	dataset.set_format(type="numpy", columns=columns)
+# 	return dataset
 
 # Define retrieval transformation to output tuple
 # def to_tuple(example):
@@ -26,15 +26,27 @@ def loader(columns, **kwargs):
 # # Apply it
 # dataset = dataset.with_transform(to_tuple)
 
-def cifar10(transform=None, **kwargs):
-	def to_tuple(example):
-	        return (transform(example["image"]) if transform else example["image"], example['label'])
-
-	dataset = loader(columns = ["image", "label"], **kwargs)
-	return dataset.with_transform(to_tuple)
+# def cifar10(transform=None, **kwargs):
+# 	# def to_tuple(example):
+# 	#         return (transform(example["image"]) if transform else example["image"], example['label'])
+# 	dataset = load_dataset(**kwargs)
+# 	dataset.set_format(type="numpy", columns= ["image", "label"])
+# 	return dataset.with_transform(to_tuple)
 	
-# 	return TransformTensorDataset(*tensors, transform=transform)
+# # 	return TransformTensorDataset(*tensors, transform=transform)
 
+class CIFAR10(Dataset):
+	def __init__(self, transform=None, **kwargs):
+		self.hf_dataset = load_dataset(**kwargs)
+		self.transform = transform
+
+	def __getitem__(self, index):
+		example = self.hf_dataset[index]
+		return (self.transform(example["image"]) if self.transform else example["image"], example['label'])
+		
+	def __len__(self):
+		return len(self.hf_dataset)
+		
 # class HFDataset(Dataset):
 # 	def __init__(self, hf_dataset, transform=None, target_transform=None):
 #         self.dataset = hf_dataset
