@@ -6,12 +6,19 @@ from datasets import load_dataset
 
 class CIFAR10(torch.utils.data.Dataset):
 	def __init__(self, transform=None, **kwargs):
+		self.indexed = bool(kwargs.pop("indexed", False))
 		self.hf_dataset = load_dataset(**kwargs)
 		self.transform = transform
 
 	def __getitem__(self, index):
 		example = self.hf_dataset[index]
-		return (self.transform(example["image"]) if self.transform else example["image"], example['label'])
-		
+		x = example["image"]
+		if self.transform:
+			x = self.transform(x)
+		if self.indexed:
+			return (x, example['label'], index)
+		else:
+			return (x, example['label'])
+	
 	def __len__(self):
 		return len(self.hf_dataset)
