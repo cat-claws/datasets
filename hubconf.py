@@ -22,3 +22,16 @@ class CIFAR10(torch.utils.data.Dataset):
 	
 	def __len__(self):
 		return len(self.hf_dataset)
+
+class TinyImagenet(CIFAR10):
+	def __getitem__(self, index):
+		example = self.hf_dataset[index]
+		x = example["image"]
+		if x.mode != "RGB":
+			x = x.convert("RGB")
+		if self.transform:
+			x = self.transform(x)
+		if self.indexed:
+			return (x, example['label'], index)
+		else:
+			return (x, example['label'])
